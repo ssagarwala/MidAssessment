@@ -1,0 +1,23 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /bookservice
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+spring:
+  application:
+    name: book-service
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      database: book-service
+  profiles:
+    active: local
+logging:
+  config: classpath:logback-spring.xml
+
+#The Swagger UI page will then be available at http://server:port/context-path/swagger-ui.html and
+#the OpenAPI description will be available at the following url for json format: http://server:port/context-path/v3/api-docs

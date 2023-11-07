@@ -1,0 +1,20 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /borrowerservice
+  springdoc:
+    api-docs:
+      path: /api-docs
+    swagger-ui:
+      path: /swagger-ui.html
+spring:
+  application:
+    name: borrower-service
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      database: borrower-service
+  profiles:
+    active: local
+logging:
+  config: classpath:logback-spring.xml
