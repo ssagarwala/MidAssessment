@@ -31,4 +31,20 @@ public class AuthorService {
          authorRepository.deleteById(id);
     }
 
+    public Author updateAuthor(String id, Author newAuthor) {
+        Author aauthor = getAuthorById(id)
+                .map(author -> {
+                    author.setName(newAuthor.getName());
+                    author.setCountry(newAuthor.getCountry());
+                    author.setBooks(newAuthor.getBooks());
+                    return createAuthor(author);
+                })
+                .orElseGet(() -> {
+                    Author author = Author.builder()
+                            .name(newAuthor.getName())
+                            .build();
+                    return createAuthor(author);
+                });
+        return aauthor;
+    }
 }

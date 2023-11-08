@@ -39,15 +39,17 @@ public class BookService {
     public Book addBook(Book book) {
         if(book != null) {
             if (book.getAuthorIds() != null) {
+                log.info("Add book to author");
                 for (String id : book.getAuthorIds()) {
                     Author author = restTemplate.getForObject("http://localhost:8081/authorservice/authors/" + id, Author.class);
                     author.getBooks().add(book.getTitle());
-                    restTemplate.postForObject("http://localhost:8081/authorservice/authors?"+id,author,Author.class);
+                    restTemplate.put("http://localhost:8081/authorservice/authors/"+id,author,Author.class);
                 }
             }
+            log.info("Save book to repo");
             bookRepository.save(book);
         }
-        return null;
+        return book;
     }
 
     public Optional<Book> getBookById(String id) {
@@ -77,7 +79,25 @@ public class BookService {
     }
 
     public void deleteBook(String id) {
-        bookRepository.deleteById(id);
+        if (id != null) {
+            log.info("delete book from author");
+            Optional<Book> bookOptional = bookRepository.findById(id);
+            if (bookOptional != null) {
+                Book book = bookOptional.get();
+                if (book.getAuthorIds() != null) {
+                    log.info("Add book to author");
+                    for (String authorId : book.getAuthorIds()) {
+                        Author author = restTemplate.getForObject("http://localhost:8081/authorservice/authors/" + authorId, Author.class);
+                        author.getBooks().remove(book.getTitle());
+                        restTemplate.put("http://localhost:8081/authorservice/authors/" + authorId, author, Author.class);
+                    }
+                }
+                log.info("Save book to repo");
+                bookRepository.save(book);
+            }
+            log.info("delete book from collection");
+            bookRepository.deleteById(id);
+        }
     }
 
     public Author getAuthorById(String authorId) {
@@ -105,14 +125,11 @@ public class BookService {
       return books;
     }
 
-//    public Book borrowBookByTitle (String title) {
-//        Book book =  bookRepository.findByTitle(title);
-//        if(book != null){
-//            BookStatus  status = book.getStatus();
-//            if(status.equals("AVAILABLE")){
-//                return book;
-//            }
-//        }
-//        return null;
-//    }
+    public Book getBookByTitle(String title) {
+        Optional<Book> bookOptional = bookRepository.findByTitle(title);
+        if(bookOptional != null){
+            return bookOptional.get();
+        }
+        else return null;
+    }
 }

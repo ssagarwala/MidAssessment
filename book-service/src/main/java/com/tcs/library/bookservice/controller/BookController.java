@@ -51,7 +51,8 @@ public class BookController {
     }
 
     //Update a book: PUT /api/books/{id}
-    @PutMapping("/{id}")
+
+    @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
     Book updateBook(@RequestBody Book book, @PathVariable String id) {
         return bookService.updateBook(book, id);
     }
@@ -70,6 +71,18 @@ public class BookController {
         } else
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
-//    Borrow a book (mark it as borrowed).
-//    Return a book (mark it as available and update the borrowing record).
+
+    //Get a book by ID: GET /api/books/{id}
+    @GetMapping(value = "/title/{title}" , produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<Book> getBookByTitle(@PathVariable("title") String  title) {
+        try{
+            Book book = bookService.getBookByTitle(title);
+            if(book != null){
+                return new ResponseEntity<>(book, HttpStatus.OK);
+            }
+        } catch(Exception e){
+            log.error("Exception in finding book by title");
+        }
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
 }

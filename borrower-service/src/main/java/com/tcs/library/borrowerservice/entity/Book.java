@@ -13,17 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 public class Book {
     @Id
-    private String id;
-    private String title;
-    private String ISBN;
-    private List<String> authorIds;
+    String id;
+    String title;
+    String ISBN;
+    List<String> authorIds;
     // @Enumerated(EnumType.STRING)
-    private BookStatus status;
+    BookStatus status;
 }
 
-enum BookStatus {
-    AVAILABLE,
-    BORROWED,
-
-    OVERDUE
-}

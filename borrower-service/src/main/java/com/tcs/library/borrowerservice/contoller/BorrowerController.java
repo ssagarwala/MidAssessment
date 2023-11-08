@@ -3,8 +3,11 @@ package com.tcs.library.borrowerservice.contoller;
 import com.tcs.library.borrowerservice.entity.Book;
 import com.tcs.library.borrowerservice.entity.Borrower;
 import com.tcs.library.borrowerservice.service.BorrowerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,7 @@ import java.util.Optional;
 @RequestMapping("/borrowers")
 public class BorrowerController {
 
+    private static final Logger log = LoggerFactory.getLogger(BorrowerController.class);
     @Autowired
     private BorrowerService borrowerService;
 
@@ -62,4 +66,22 @@ public class BorrowerController {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
     }
+
+
+    //    Borrow a book (mark it as borrowed).
+
+    @GetMapping("/book/{title}")
+    ResponseEntity<Book> borrowABook(@PathVariable("title") String title) {
+        try{
+           Book book =  borrowerService.borrowABook(title);
+           return new ResponseEntity<>(book, HttpStatus.OK);
+        } catch(Exception e){
+            log.error("Exception in borrowing book - book service is down" );
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+//    Return a book (mark it as available and update the borrowing record).
+
+
 }
