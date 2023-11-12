@@ -23,5 +23,6 @@ public class Book {
     List<String> authorIds;
    // @Enumerated(EnumType.STRING)
     BookStatus status;
+    boolean overDue;
 }
 
