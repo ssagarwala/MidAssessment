@@ -58,8 +58,8 @@ public class BorrowerService {
         borrowerRepository.deleteById(id);
     }
 
-    public List<Book> getOverDueBooks(String status) {
-        return restTemplate.getForObject("http://localhost:8082/bookservice/books/search?status=" + status, List.class);
+    public List<Book> getOverDueBooks() {
+        return restTemplate.getForObject("http://localhost:8082/bookservice/books/overDue", List.class);
     }
 
     public Book borrowABook(String title) {
@@ -75,4 +75,18 @@ public class BorrowerService {
             }
             return null;
         }
+
+    public Book returnABook(String title) {
+        Book book = restTemplate.getForObject("http://localhost:8082/bookservice/books/title/" + title, Book.class);
+        if (book != null) {
+            String status = book.getStatus().toString();
+            if (status.equalsIgnoreCase("BORROWED")) {
+                log.info("Book present and available for borrowing");
+                book.setStatus(BookStatus.AVAILABLE);
+                restTemplate.put("http://localhost:8082/bookservice/books/"+book.getId(),book, Book.class);
+                return book;
+            }
+        }
+        return null;
+    }
 }
