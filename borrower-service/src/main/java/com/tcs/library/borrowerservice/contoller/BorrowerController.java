@@ -2,6 +2,9 @@ package com.tcs.library.borrowerservice.contoller;
 
 import com.tcs.library.borrowerservice.entity.Book;
 import com.tcs.library.borrowerservice.entity.Borrower;
+import com.tcs.library.borrowerservice.exception.BadRequestException;
+import com.tcs.library.borrowerservice.exception.BookNotFoundException;
+import com.tcs.library.borrowerservice.exception.InternalServerErrorException;
 import com.tcs.library.borrowerservice.service.BorrowerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,10 +59,9 @@ public class BorrowerController {
         borrowerService.deleteBorrower(id);
     }
 
-    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Book>> getOverDueBooks(
-            @RequestParam(value = "status", required = false) String status) {
-        List<Book> books =  borrowerService.getOverDueBooks(status);
+    @GetMapping(value = "/overDue", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Book>> getOverDueBooks() {
+        List<Book> books =  borrowerService.getOverDueBooks();
         if(books != null){
             return  new ResponseEntity<>(books, HttpStatus.OK);
         } else {
@@ -71,17 +73,19 @@ public class BorrowerController {
     //    Borrow a book (mark it as borrowed).
 
     @GetMapping("/book/{title}")
-    ResponseEntity<Book> borrowABook(@PathVariable("title") String title) {
+    ResponseEntity<String> borrowABook(@PathVariable("title") String title) {
         try{
            Book book =  borrowerService.borrowABook(title);
-           return new ResponseEntity<>(book, HttpStatus.OK);
-        } catch(Exception e){
-            log.error("Exception in borrowing book - book service is down" );
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+           String bookId = book.getId();
+            return new ResponseEntity<>(bookId, HttpStatus.OK);
+        } catch (BookNotFoundException e) {
+            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+        } catch (InternalServerErrorException e) {
+            return new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (BadRequestException e) {
+            return new ResponseEntity<>("Bad Request", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
-//    Return a book (mark it as available and update the borrowing record).
-
-
 }
