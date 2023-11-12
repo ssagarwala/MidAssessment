@@ -120,9 +120,9 @@ public class BookService {
          return booksByAuthor;
         }
 
-    public List<Book> getAllOverDueBooks(String status) {
-        List<Book> books =  bookRepository.findByStatus(status);
-      return books;
+    public List<Book> getAllOverDueBooks() {
+        List<Book> books =  bookRepository.findByOverDue(true);
+        return books.stream().filter(b-> b.isOverDue()).collect(Collectors.toList());
     }
 
     public Book getBookByTitle(String title) {
