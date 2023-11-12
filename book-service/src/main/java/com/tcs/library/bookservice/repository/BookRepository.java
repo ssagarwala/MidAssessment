@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface BookRepository extends MongoRepository<Book, String> {
     Optional<Book> findByTitle(String title);
-    List<Book> findByStatus(String status);
+    List<Book> findByOverDue(boolean overDue);
 
 }
