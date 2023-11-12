@@ -63,9 +63,9 @@ public class BookController {
         bookService.deleteBook(id);
     }
 
-    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Book>> getAllOverDueBooks(@RequestParam(value = "status") String status) {
-        List<Book> books =  bookService.getAllOverDueBooks(status);
+    @GetMapping(value = "/overDue", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<List<Book>> getAllOverDueBooks() {
+        List<Book> books =  bookService.getAllOverDueBooks();
         if(books != null){
             return  new ResponseEntity<>(books, HttpStatus.FOUND);
         } else
